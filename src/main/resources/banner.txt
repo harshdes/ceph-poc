@@ -1,0 +1,1 @@
+${Ansi.GREEN} :: FIOS Ceph application with Spring Boot${spring-boot.formatted-version} ::${Ansi.DEFAULT}
