@@ -39,7 +39,7 @@ RUN echo 'deb http://www.apache.org/dist/cassandra/debian 30x main' >> /etc/apt/
 ENV CASSANDRA_VERSION 3.0.10
 
 RUN apt-get update \
-	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat \
+	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat vim \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://issues.apache.org/jira/browse/CASSANDRA-11661
