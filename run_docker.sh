@@ -108,9 +108,9 @@ if [[ $? -eq 0 ]]; then
     echo "Successfully started container with ID: ${new_container}"
     HOST_PORT_8080=`docker inspect --format='{{(index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort}}' ${new_container}`
     if [ $(isDockerToolbox) == true ]; then
-        export WEB_URL="https://`docker-machine ip`:${HOST_PORT_8080}"
+        export WEB_URL="http://`docker-machine ip`:${HOST_PORT_8080}"
     else
-        export WEB_URL="https://`hostname -f`:${HOST_PORT_8080}"
+        export WEB_URL="http://`hostname -f`:${HOST_PORT_8080}"
     fi
 
     echo -e "After few seconds of startup time, the application can be accessed at: \033[1m ${WEB_URL}\033[0m"
