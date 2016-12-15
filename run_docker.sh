@@ -103,7 +103,7 @@ if [[ ${CONTAINER_NAME} ]]; then
 fi
 
 MEM_SETTINGS="-m 2g --memory-swap=2g"
-new_container=`docker run -td  ${MEM_SETTINGS} -p 80:8080 ${NAME_ARGUMENT} ${IMAGE_NAME}`
+new_container=`docker run -td  ${MEM_SETTINGS} -p 5005:5005 -p 7000:7000 -p 9042:9042 -p 9160:9160 -p 80:8080 ${NAME_ARGUMENT} ${IMAGE_NAME}`
 if [[ $? -eq 0 ]]; then
     echo "Successfully started container with ID: ${new_container}"
     HOST_PORT_8080=`docker inspect --format='{{(index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort}}' ${new_container}`

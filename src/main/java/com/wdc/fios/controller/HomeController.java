@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Api(tags = {"Ceph application"})
 public class HomeController {
+
     @ApiOperation(value = "/", notes = "Welcomes user")
     @ApiResponses(
             @ApiResponse(code = 200, message = "", response = String.class))

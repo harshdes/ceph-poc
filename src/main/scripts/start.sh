@@ -32,14 +32,18 @@ isCassandraUp() {
     fi
 }
 
+# Start the cassandra daemon
 cassandra
 
 if [ $(isCassandraUp) == true ]; then
     echo "Cassandra startup completed successfully --- OK"
+    # Create the schema
     cqlsh -f /app/scripts/fiosceph.cql
 
+    # Start spring boot application
     cd /app
-    java -jar ceph-app.jar
+    java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar ceph-app.jar
+    #java -jar ceph-app.jar
 else
     echo "ERROR: Cassandra startup has ended with errors..."
 fi
