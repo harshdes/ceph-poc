@@ -21,14 +21,6 @@ public class AddNodeTask {
     @EnableStateMachineFactory(name="addNodeTask")
     public static class Config extends EnumStateMachineConfigurerAdapter<Config.AddNodeStates, Config.AddNodeEvents> {
 
-//        @Override
-//        public void configure(StateMachineConfigurationConfigurer<Config.AddNodeStates, Config.AddNodeEvents> config)
-//                throws Exception {
-//            config
-//                    .withConfiguration()
-//                    .listener(new StateMachineEventListener());
-//        }
-
         @Override
         public void configure(StateMachineStateConfigurer<AddNodeStates, AddNodeEvents> states)
                 throws Exception {
