@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <property resource="application.properties"/>
+
+    <property name="DEV_HOME" value="logs" />
+
+    <appender name="FILE-AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_HOME}/debug.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%-5level] [%date{dd MMM yyyy;HH:mm:ss.SSS,UTC}] [%logger{0}:%method:%line] - %msg %ex{full}%n
+            </pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DEV_HOME}/archived/debug.%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.wdc.fios" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE-AUDIT" />
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="FILE-AUDIT" />
+    </root>
+</configuration>

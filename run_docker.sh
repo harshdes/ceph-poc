@@ -1,6 +1,9 @@
 #!/bin/bash
 
-usage() { echo "Usage: $0 [-f <container_image_file>] [-i <image_id_or_name>] [-n <container_name>]" 1>&2; exit 1; }
+# Take DEV_MODE from environment if specified, else default to false
+BUILD_MODE=${BUILD_MODE:-"prod"}
+
+usage() { echo "Usage: $0 [-f <container_image_file>] [-i <image_id_or_name>] [-n <container_name>] [-b <dev|prod>]" 1>&2; exit 1; }
 
 ##### Check docker access #####
 docker ps >/dev/null 2>&1
@@ -10,7 +13,7 @@ if [ $? -ne 0 ]; then
 fi
 
 ##### Parse args #####
-while getopts ":f:i::n:" o; do
+while getopts ":f:i::n::b:" o; do
     case "${o}" in
         f)
             f=${OPTARG}
@@ -20,6 +23,9 @@ while getopts ":f:i::n:" o; do
             ;;
         n)
             n=${OPTARG}
+            ;;
+        b)
+            BUILD_MODE=${OPTARG}
             ;;
         *)
             usage
@@ -103,7 +109,12 @@ if [[ ${CONTAINER_NAME} ]]; then
 fi
 
 MEM_SETTINGS="-m 2g --memory-swap=2g"
-new_container=`docker run -td  ${MEM_SETTINGS} -p 5005:5005 -p 7000:7000 -p 9042:9042 -p 9160:9160 -p 80:8080 ${NAME_ARGUMENT} ${IMAGE_NAME}`
+if [ "${BUILD_MODE}" == "dev" ]; then
+    DEBUG_PORT_MAP="-p 5005:5005"
+fi
+
+new_container=`docker run -td  ${MEM_SETTINGS} ${DEBUG_PORT_MAP} -p 7000:7000 -p 9042:9042 -p 9160:9160 -p 80:8080 \
+                -e BUILD_MODE=${BUILD_MODE} ${NAME_ARGUMENT} ${IMAGE_NAME}`
 if [[ $? -eq 0 ]]; then
     echo "Successfully started container with ID: ${new_container}"
     HOST_PORT_8080=`docker inspect --format='{{(index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort}}' ${new_container}`

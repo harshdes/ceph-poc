@@ -42,8 +42,11 @@ if [ $(isCassandraUp) == true ]; then
 
     # Start spring boot application
     cd /app
-    java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar ceph-app.jar
-    #java -jar ceph-app.jar
+    if [ "${BUILD_MODE}" == "dev" ]; then
+        java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar ceph-app.jar
+    else
+        java -jar ceph-app.jar
+    fi
 else
     echo "ERROR: Cassandra startup has ended with errors..."
 fi

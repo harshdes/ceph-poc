@@ -1,25 +1,25 @@
 package com.wdc.fios.tasks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
-import org.springframework.statemachine.config.builders.StateMachineConfigBuilder;
-import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
-
-import java.util.EnumSet;
 
 /**
  * Created by Harsh Desai on 12/14/16.
  */
 @Configuration
 public class AddNodeTask {
+
     @Configuration
     @EnableStateMachineFactory(name="addNodeTask")
     public static class Config extends EnumStateMachineConfigurerAdapter<Config.AddNodeStates, Config.AddNodeEvents> {
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @Override
         public void configure(StateMachineStateConfigurer<AddNodeStates, AddNodeEvents> states)
@@ -50,7 +50,7 @@ public class AddNodeTask {
         @Bean
         public Action<AddNodeStates, AddNodeEvents> setupCassandra() {
             return stateContext -> {
-                System.out.println("[state] setupCassandra");
+                logger.debug("[state] setupCassandra");
                 stateContext.getStateMachine().sendEvent(AddNodeEvents.CASSANDRA_UP);
             };
         }
@@ -59,7 +59,7 @@ public class AddNodeTask {
         @Bean
         public Action<AddNodeStates, AddNodeEvents> setupSpringBoot() {
             return stateContext -> {
-                System.out.println("[state] setupSpringBoot");
+                logger.debug("[state] setupSpringBoot");
                 stateContext.getStateMachine().sendEvent(AddNodeEvents.SPRINGBOOT_UP);
             };
         }
@@ -67,7 +67,7 @@ public class AddNodeTask {
         @Bean
         public Action<AddNodeStates, AddNodeEvents> setupKeepalived() {
             return stateContext -> {
-                System.out.println("[state] setupKeepalived");
+                logger.debug("[state] setupKeepalived");
                 stateContext.getStateMachine().sendEvent(AddNodeEvents.KEEPALIVED_DONE);
             };
         }
