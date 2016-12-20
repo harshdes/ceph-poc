@@ -1,4 +1,11 @@
-create keyspace fiosceph with replication={'class':'SimpleStrategy', 'replication_factor': 1};
+CREATE KEYSPACE IF NOT EXISTS fiosceph WITH replication={'class':'SimpleStrategy', 'replication_factor': 1};
 use fiosceph;
-create table users (name text primary key,  password text,  emails set<text>);
-create table tasks (id text primary key, state text);
+
+CREATE TABLE IF NOT EXISTS users (
+    name text PRIMARY KEY,
+    password text,
+    emails set<text>);
+
+CREATE TABLE IF NOT EXISTS tasks (
+    id text PRIMARY KEY,
+    state text);
