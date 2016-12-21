@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 
 isCassandraUp() {
@@ -11,7 +11,7 @@ isCassandraUp() {
     let "cassandra_status = nc_return + $?"
 
     retries=1
-    while (( retries < 6 && cassandra_status != 0 )); do
+    while (( retries < 11 && cassandra_status != 0 )); do
         # Sleep for a while
         sleep 2s
 
@@ -32,16 +32,24 @@ isCassandraUp() {
     fi
 }
 
+#cd /app
+
 # Start the cassandra daemon
-cassandra
+#cassandra
+service cassandra start
+
 
 if [ $(isCassandraUp) == true ]; then
     echo "Cassandra startup completed successfully --- OK"
+
+    # Setup cassandra
+    cassandra-utils/cassandra_utils.py -a setup --seed_source keepalived -l /var/log/
+
     # Create the schema
+    # TODO move this to spring application (http://stackoverflow.com/questions/37352689/create-keyspace-table-and-generate-tables-dynamically-using-spring-data-cassanr)
     cqlsh -f /app/scripts/fiosceph.cql
 
     # Start spring boot application
-    cd /app
     if [ "${BUILD_MODE}" == "dev" ]; then
         java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005 -jar ceph-app.jar
     else

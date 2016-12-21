@@ -51,6 +51,11 @@ public class AddNodeTask {
         public Action<AddNodeStates, AddNodeEvents> setupCassandra() {
             return stateContext -> {
                 logger.debug("[state] setupCassandra");
+
+                // TODO Get peer from keepalived
+
+                // TODO Invoke cassandra-util script remotely
+
                 stateContext.getStateMachine().sendEvent(AddNodeEvents.CASSANDRA_UP);
             };
         }

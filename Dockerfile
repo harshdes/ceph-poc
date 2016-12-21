@@ -39,7 +39,8 @@ RUN echo 'deb http://www.apache.org/dist/cassandra/debian 30x main' >> /etc/apt/
 ENV CASSANDRA_VERSION 3.0.10
 
 RUN apt-get update \
-	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat vim \
+	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat vim build-essential python-dev \
+	libev4 libev-dev python-pip \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://issues.apache.org/jira/browse/CASSANDRA-11661
@@ -52,6 +53,11 @@ RUN mkdir -p /var/lib/cassandra "$CASSANDRA_CONFIG" \
 	&& chmod 777 /var/lib/cassandra "$CASSANDRA_CONFIG"
 VOLUME /var/lib/cassandra
 
+RUN mkdir /app
+WORKDIR /app
+ADD cassandra-utils/requirements.txt /app/cassandra-utils/requirements.txt
+RUN pip install -r cassandra-utils/requirements.txt
+
 # 7000: intra-node communication
 # 7001: TLS intra-node communication
 # 7199: JMX
@@ -60,13 +66,14 @@ VOLUME /var/lib/cassandra
 EXPOSE 7000 7001 7199 9042 9160
 
 EXPOSE 9000 8888
-RUN mkdir /app
-WORKDIR /app
 
 COPY src/main/scripts/start.sh /usr/local/bin/start
 COPY src/main/scripts/fiosceph.cql /app/scripts/
 COPY target/ceph-0.0.1-SNAPSHOT.jar /app/ceph-app.jar
 RUN sh -c 'touch /app.jar'
+
+
+ADD cassandra-utils /app/cassandra-utils
 
 # This wil invoke start.sh script when someone runs the container
 CMD ["start"]
