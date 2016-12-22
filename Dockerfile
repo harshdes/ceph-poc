@@ -68,7 +68,6 @@ EXPOSE 7000 7001 7199 9042 9160
 EXPOSE 9000 8888
 
 COPY src/main/scripts/start.sh /usr/local/bin/start
-COPY src/main/scripts/fiosceph.cql /app/scripts/
 COPY target/ceph-0.0.1-SNAPSHOT.jar /app/ceph-app.jar
 RUN sh -c 'touch /app.jar'
 

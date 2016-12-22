@@ -32,22 +32,11 @@ isCassandraUp() {
     fi
 }
 
-#cd /app
-
-# Start the cassandra daemon
-#cassandra
-service cassandra start
-
+# Setup cassandra
+cassandra-utils/cassandra_utils.py -a setup --seed_source keepalived -l /var/log/
 
 if [ $(isCassandraUp) == true ]; then
     echo "Cassandra startup completed successfully --- OK"
-
-    # Setup cassandra
-    cassandra-utils/cassandra_utils.py -a setup --seed_source keepalived -l /var/log/
-
-    # Create the schema
-    # TODO move this to spring application (http://stackoverflow.com/questions/37352689/create-keyspace-table-and-generate-tables-dynamically-using-spring-data-cassanr)
-    cqlsh -f /app/scripts/fiosceph.cql
 
     # Start spring boot application
     if [ "${BUILD_MODE}" == "dev" ]; then

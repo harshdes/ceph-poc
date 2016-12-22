@@ -5,23 +5,28 @@ http://datastax.github.io/python-driver/api/cassandra/cluster.html
 """
 from cassandra.cluster import Cluster
 
+from lib.common_utils import Logger
+from lib.constants import CassandraConstants
+
 
 class cassandra_client(object):
     """
     classdocs
     """
 
-    def __init__(self, address="localhost"):
+    def __init__(self, address="127.0.0.1", keyspace=CassandraConstants.CEPH_DEFAULT_KEYSPACE):
         """
         Constructor
-        :type address: String
         """
+        self.keyspace = keyspace
         self.address = address
-        self.cluster = Cluster([self.address])
+        self.cluster = Cluster(contact_points=[self.address])
+        self.logger = Logger(name="cassandra_client")
 
     def __enter__(self):
-        # Create a cassandra cluster, connect and return it
+        #self.session = self.cluster.connect(keyspace=self.keyspace)
         self.session = self.cluster.connect()
+        self.logger.info("Successfully connected to cluster")
         return self.session
 
     def __exit__(self, exc_type, exc_val, exc_tb):

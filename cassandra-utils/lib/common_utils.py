@@ -10,6 +10,7 @@ debug_logfile = None
 debug_handler = None
 error_logfile = None
 error_handler = None
+info_handler = None
 log_formatter = None
 
 
@@ -29,6 +30,7 @@ def do_global_config(log_level=default_level, log_basedir=None):
     global debug_handler
     global error_logfile
     global error_handler
+    global info_handler
     global log_formatter
     if (debug_logfile and error_logfile and debug_handler and error_handler
         and log_formatter):
@@ -45,8 +47,7 @@ def do_global_config(log_level=default_level, log_basedir=None):
     log_format = ("%(asctime)s | %(levelname)s | %(name)s"
                   " | %(threadName)s: %(message)s")
     date_format = "%Y-%m-%d %H:%M:%S"
-    # create a Formatter object using those strings (for use with non-root
-    # loggers)
+    # create a Formatter object using those strings (for use with non-root loggers)
     log_formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
     logging.basicConfig(format=log_format, datefmt=date_format,
                         level=log_level)
@@ -62,6 +63,12 @@ def do_global_config(log_level=default_level, log_basedir=None):
     debug_handler = logging.FileHandler(debug_logfile, "w")
     debug_handler.setLevel(logging.DEBUG)
     debug_handler.setFormatter(log_formatter)
+
+    # set up info handler (same log file as debug)
+    info_handler = logging.FileHandler(debug_logfile, "w")
+    info_handler.setLevel(logging.INFO)
+    info_handler.setFormatter(log_formatter)
+
     # set up error log file
     error_logfile = os.path.join(logdir, "error_log.txt")
     error_handler = logging.FileHandler(error_logfile, "w")
@@ -73,24 +80,29 @@ def do_global_config(log_level=default_level, log_basedir=None):
 
 
 class Cmd_helper(object):
-    '''
+    """
     classdocs
-    '''
+    """
 
-    def __init__(self, logger=None):
-        self.logger = logger
+    def __init__(self):
+        self.logger = Logger(name="cmd_helper")
 
-    def run_cmd(self, command=None):
+    def run_cmd(self, command=None, silent=False):
         """
+        :param silent:
         :param command: Command to run
         :return:
         """
         try:
-            self.logger.debug("Running command: {cmd}".format(cmd=command))
+            if not silent:
+                self.logger.debug("Running command: {cmd}".format(cmd=command))
             output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-            return output
+            if not silent:
+                self.logger.debug("command: {cmd} output: {out}".format(cmd=command, out=output))
+            return output.strip()
         except subprocess.CalledProcessError as err:
-            self.logger.error("Problem running cmd: {cmd} error: {error}".format(cmd=command, error=err.output))
+            if not silent:
+                self.logger.error("Problem running cmd: {cmd} error: {error}".format(cmd=command, error=err.output))
 
         return None
 
@@ -127,3 +139,4 @@ class Logger(logging.Logger):
         # the proper files
         self.addHandler(debug_handler)
         self.addHandler(error_handler)
+        self.addHandler(info_handler)
