@@ -14,7 +14,7 @@ class cassandra_client(object):
     classdocs
     """
 
-    def __init__(self, address="127.0.0.1", keyspace=CassandraConstants.CEPH_DEFAULT_KEYSPACE):
+    def __init__(self, address=CassandraConstants.CLUSTER_ADDRESS, keyspace=CassandraConstants.CEPH_DEFAULT_KEYSPACE):
         """
         Constructor
         """
@@ -24,7 +24,6 @@ class cassandra_client(object):
         self.logger = Logger(name="cassandra_client")
 
     def __enter__(self):
-        #self.session = self.cluster.connect(keyspace=self.keyspace)
         self.session = self.cluster.connect()
         self.logger.info("Successfully connected to cluster")
         return self.session
