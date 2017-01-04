@@ -7,6 +7,7 @@
 The spring boot application is packaged inside a docker container. 
 To build and run the container:
 ```sh
+# If working on linux machine, run below command under sudo access
 ./build.sh
 ```
 The script will
@@ -18,7 +19,7 @@ The script will
  * Starts the java web application
 
 The output of the build script will contain the location/URL of the application.
-This is typically `http://<docker-machine-ip` ( For e.g http://192.168.99.100 )
+This is typically http://192.168.99.100 for windows & osx and http://<primary_ip> for linux
 
 ### Swagger
 

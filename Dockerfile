@@ -39,7 +39,7 @@ RUN echo 'deb http://www.apache.org/dist/cassandra/debian 30x main' >> /etc/apt/
 ENV CASSANDRA_VERSION 3.0.10
 
 RUN apt-get update \
-	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat vim build-essential python-dev \
+	&& apt-get install -y cassandra="$CASSANDRA_VERSION" netcat vim build-essential python-dev python-paramiko \
 	libev4 libev-dev python-pip \
 	&& rm -rf /var/lib/apt/lists/*
 

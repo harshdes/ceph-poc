@@ -3,4 +3,3 @@ config==0.3.9
 futures==3.0.5
 six==1.10.0
 PyYAML==3.12
-paramiko==2.1.1
