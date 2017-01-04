@@ -5,9 +5,11 @@ TODO write basic intro about the module
 """
 import argparse
 import sys
+import socket
+import random
 
 from lib import cassandra_ops, ceph_ops, keepalived_ops
-from lib.common_utils import do_global_config, Logger
+from lib.common_utils import do_global_config, Logger, CmdHelper
 
 __author__ = "Harsh Desai"
 __maintainer__ = "Harsh Desai"
@@ -29,6 +31,7 @@ if __name__ == '__main__':
     options = get_args()
     do_global_config(log_basedir=options.log_dir)
     logger = Logger(name="main")
+    cmd_helper = CmdHelper()
 
     if options.action == "startup":
         logger.debug("Running startup sequence.")
@@ -41,18 +44,25 @@ if __name__ == '__main__':
             logger.error("Failed to find any CEPH monitor nodes to run management service. Exiting init sequence.")
             sys.exit(-3)
 
+        # Remove the executing node
+        if str(socket.gethostbyname(socket.gethostname())) in monitor_nodes:
+            monitor_nodes.remove(str(socket.gethostbyname(socket.gethostname())))
+
         logger.info("Found monitor nodes: {monitors}".format(monitors=monitor_nodes))
 
-        # TODO add election code and remove hardcoded peer_node
-        peer_node = monitor_nodes[1]
+        # Randomly select a peer node
+        peer_node = monitor_nodes[random.randrange(len(monitor_nodes))]
 
         logger.info("Node {peer} elected as peer for HA pair".format(peer=peer_node))
 
         # Setup cassandra on peer node
-        # TODO
+        cmd = "docker exec ceph /app/cassandra-utils/cassandra_utils.py -a cassandra_setup -l /var/log/ -s " + \
+              str(socket.gethostbyname(socket.gethostname())) + " " + peer_node
+        cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
         # Setup keepalived on peer node
-        # TODO
+        cmd = "docker exec ceph /app/cassandra-utils/cassandra_utils.py -a keepalived_setup -l /var/log/"
+        cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
         # Setup cassandra on this node
         logger.debug("Running cassandra setup sequence.")
