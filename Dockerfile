@@ -54,9 +54,10 @@ RUN mkdir -p /var/lib/cassandra "$CASSANDRA_CONFIG" \
 VOLUME /var/lib/cassandra
 
 RUN mkdir /app
+RUN mkdir /var/log/apis
 WORKDIR /app
-ADD cassandra-utils/requirements.txt /app/cassandra-utils/requirements.txt
-RUN pip install -r cassandra-utils/requirements.txt
+RUN pip install cassandra-driver==3.7.1 config==0.3.9 futures==3.0.5 six==1.10.0 PyYAML==3.12
+ADD apis-utils /app/apis-utils
 
 # 7000: intra-node communication
 # 7001: TLS intra-node communication
@@ -70,9 +71,6 @@ EXPOSE 9000 8888
 COPY src/main/scripts/start.sh /usr/local/bin/start
 COPY target/ceph-0.0.1-SNAPSHOT.jar /app/ceph-app.jar
 RUN sh -c 'touch /app.jar'
-
-
-ADD cassandra-utils /app/cassandra-utils
 
 # This wil invoke start.sh script when someone runs the container
 CMD ["start"]

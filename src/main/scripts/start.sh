@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # Setup cassandra
-cassandra-utils/cassandra_utils.py -a startup -l /var/log/
+apis-utils/apis-utils.py -a startup -l /var/log/
 
 # Start spring boot application
 if [ "${BUILD_MODE}" == "dev" ]; then

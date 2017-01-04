@@ -4,12 +4,13 @@ TODO write basic intro about the module
 
 """
 import argparse
-import sys
-import socket
+import logging.config
 import random
+import socket
+import sys
 
 from lib import cassandra_ops, ceph_ops, keepalived_ops
-from lib.common_utils import do_global_config, Logger, CmdHelper
+from lib.common_utils import CmdHelper, setup_logging
 
 __author__ = "Harsh Desai"
 __maintainer__ = "Harsh Desai"
@@ -29,8 +30,8 @@ def get_args():
 
 if __name__ == '__main__':
     options = get_args()
-    do_global_config(log_basedir=options.log_dir)
-    logger = Logger(name="main")
+    setup_logging()
+    logger = logging.getLogger(__name__)
     cmd_helper = CmdHelper()
 
     if options.action == "startup":
@@ -56,12 +57,12 @@ if __name__ == '__main__':
         logger.info("Node {peer} elected as peer for HA pair".format(peer=peer_node))
 
         # Setup cassandra on peer node
-        cmd = "docker exec ceph /app/cassandra-utils/cassandra_utils.py -a cassandra_setup -l /var/log/ -s " + \
+        cmd = "docker exec ceph /app/apis-utils/apis-utils.py -a cassandra_setup -l /var/log/ -s " + \
               str(socket.gethostbyname(socket.gethostname())) + " " + peer_node
         cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
         # Setup keepalived on peer node
-        cmd = "docker exec ceph /app/cassandra-utils/cassandra_utils.py -a keepalived_setup -l /var/log/"
+        cmd = "docker exec ceph /app/apis-utils/apis-utils.py -a keepalived_setup -l /var/log/"
         cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
         # Setup cassandra on this node

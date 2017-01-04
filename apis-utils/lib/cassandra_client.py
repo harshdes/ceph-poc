@@ -3,9 +3,9 @@ Created on Dec 20, 2016
 
 http://datastax.github.io/python-driver/api/cassandra/cluster.html
 """
+import logging
 from cassandra.cluster import Cluster
 
-from lib.common_utils import Logger
 from lib.constants import CassandraConstants
 
 
@@ -21,7 +21,7 @@ class cassandra_client(object):
         self.keyspace = keyspace
         self.address = address
         self.cluster = Cluster(contact_points=[self.address])
-        self.logger = Logger(name="cassandra_client")
+        self.logger = logging.getLogger(__name__)
 
     def __enter__(self):
         self.session = self.cluster.connect()

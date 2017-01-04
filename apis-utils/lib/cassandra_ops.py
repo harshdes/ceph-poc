@@ -5,12 +5,12 @@ Created on Dec 20, 2016
 """
 import datetime
 import shutil
-
+import logging
 import os
 
 from lib import cassandra_client
 from lib.cassandra_client import cassandra_client
-from lib.common_utils import CmdHelper, Logger, netcat, read_yaml_file, write_yaml_file
+from lib.common_utils import CmdHelper, netcat, read_yaml_file, write_yaml_file
 from lib.constants import CassandraConstants
 import time
 
@@ -44,7 +44,7 @@ def is_cassandra_running(cmd_helper=None, timeout=30, retry_interval=2):
 
 
 def setup(seeds=None):
-    logger = Logger(name="cassandra_setup")
+    logger = logging.getLogger(__name__)
     cmd_helper = CmdHelper()
 
     cmd_helper.run_cmd(command=CassandraConstants.SERVICE_STOP_CMD, silent=True)
