@@ -3,7 +3,7 @@
 # Take DEV_MODE from environment if specified, else default to false
 BUILD_MODE=${BUILD_MODE:-"prod"}
 
-usage() { echo "Usage: $0 [-f <container_image_file>] [-i <image_id_or_name>] [-n <container_name>] [-b <dev|prod>]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-f <container_image_file>] [-i <image_id_or_name>] [-n <active_or_passive>] [-b <dev|prod>]" 1>&2; exit 1; }
 
 ##### Check docker access #####
 docker ps >/dev/null 2>&1
@@ -41,7 +41,8 @@ fi
 
 IMAGE_FILE=${f}
 IMAGE_NAME=${i}
-CONTAINER_NAME=${n:-ceph}
+NODE_MODE=${n:-active}
+CONTAINER_NAME=ceph
 
 isDockerToolbox() {
     which docker-machine > /dev/null 2>&1
@@ -114,7 +115,7 @@ if [ "${BUILD_MODE}" == "dev" ]; then
 fi
 
 new_container=`docker run -td  ${MEM_SETTINGS} ${DEBUG_PORT_MAP} -p 7000:7000 -p 9042:9042 -p 9160:9160 -p 80:8080 \
-                -e BUILD_MODE=${BUILD_MODE} ${NAME_ARGUMENT} ${IMAGE_NAME}`
+                -e BUILD_MODE=${BUILD_MODE} -e NODE_MODE=${NODE_MODE} ${NAME_ARGUMENT} ${IMAGE_NAME}`
 if [[ $? -eq 0 ]]; then
     echo "Successfully started container with ID: ${new_container}"
     HOST_PORT_8080=`docker inspect --format='{{(index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort}}' ${new_container}`

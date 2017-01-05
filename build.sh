@@ -2,10 +2,11 @@
 
 # Take BUILD_MODE from environment if specified, else default to false
 BUILD_MODE=${BUILD_MODE:-"prod"}
+NODE_MODE="active"
 
-usage() { echo "Usage: $0 [-b] [-h]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-b] [-n] [-h]" 1>&2; exit 1; }
 
-args=`getopt hb: $*`
+args=`getopt hb:n: $*`
 
 # Rewrite ARGV with the output of getopt
 set -- $args
@@ -15,6 +16,11 @@ for i do
   case "$i" in
     -b)
       BUILD_MODE=$2;
+      # Remove the current option from ARGV so that the next one is
+      # available
+      shift;;
+    -n)
+      NODE_MODE=$2;
       # Remove the current option from ARGV so that the next one is
       # available
       shift;;
@@ -33,4 +39,4 @@ done
 docker build -t ceph .
 
 # Run the container
-./run_docker.sh -i ceph -b ${BUILD_MODE}
+./run_docker.sh -i ceph -b ${BUILD_MODE} -n ${NODE_MODE}

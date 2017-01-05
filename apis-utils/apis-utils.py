@@ -40,6 +40,7 @@ if __name__ == '__main__':
             logger.error("Current machine is not a CEPH monitor node. Exiting init sequence.")
             sys.exit(-2)
 
+        # Get possible candidates for the peer node
         monitor_nodes = ceph_ops.get_monitor_nodes()
         if not monitor_nodes:
             logger.error("Failed to find any CEPH monitor nodes to run management service. Exiting init sequence.")
@@ -58,16 +59,17 @@ if __name__ == '__main__':
 
         # Setup cassandra on peer node
         cmd = "docker exec ceph /app/apis-utils/apis-utils.py -a cassandra_setup -l /var/log/ -s " + \
-              str(socket.gethostbyname(socket.gethostname())) + " " + peer_node
+              "127.0.0.1 " + str(socket.gethostbyname(socket.gethostname()))
         cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
-        # Setup keepalived on peer node
-        cmd = "docker exec ceph /app/apis-utils/apis-utils.py -a keepalived_setup -l /var/log/"
-        cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
+        # # Setup keepalived on peer node
+        # cmd = "docker exec ceph /app/apis-utils/apis-utils.py -a keepalived_setup -l /var/log/"
+        # cmd_helper.run_remote_cmd(cmd=cmd, host=peer_node, host_user="root", host_password="Flash123")
 
         # Setup cassandra on this node
         logger.debug("Running cassandra setup sequence.")
-        cassandra_ops.setup(options.seeds)
+        seeds = ['127.0.0.1', peer_node]
+        cassandra_ops.setup(seeds)
 
         # Setup keepalived on this node
         logger.debug("Running keepalived setup sequence.")

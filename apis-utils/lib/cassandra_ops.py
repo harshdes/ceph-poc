@@ -43,7 +43,7 @@ def is_cassandra_running(cmd_helper=None, timeout=30, retry_interval=2):
     return False
 
 
-def setup(seeds=None):
+def setup(seeds=[]):
     logger = logging.getLogger(__name__)
     cmd_helper = CmdHelper()
 
@@ -54,11 +54,12 @@ def setup(seeds=None):
     logger.debug("cassandra config before edit: {cfg}".format(cfg=config))
 
     # Update seeds
-    # (optional) Update listen_address, rpc_address, endpoint_snitch
+    config['seed_provider'][0]['parameters'][0]['seeds'] = ",".join(seeds)
 
     # Update cluster_name
     config['cluster_name'] = CassandraConstants.CEPH_CLUSTER_NAME
 
+    # (future) Update listen_address, rpc_address, endpoint_snitch
     # (future) Calculate num_tokens by using cores and memory of current machine
 
     # Backup existing file before modifying it

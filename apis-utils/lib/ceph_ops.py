@@ -19,5 +19,5 @@ def get_monitor_nodes():
     :return: list of monitor nodes in ceph cluster
     """
     # TODO add implementation and remove hardcoded list
-    return ["10.60.21.112", "10.60.21.113"]
+    return ["10.60.21.112"]
 
